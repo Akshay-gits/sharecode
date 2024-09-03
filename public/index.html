@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sharecode</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Source+Code+Pro&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>sharecode</h1>
+        <h4>"sharing is caring"</h4>
+        <nav>
+            <ul>
+                <li><a href="#" id="homeTab">Home</a></li>
+                <li><a href="#" id="aboutTab">About</a></li>
+            </ul>
+        </nav>
+        <button id="themeToggle">🌙 Dark Mode</button>
+    </header>
+    
+    <main>
+        <!-- Home Section -->
+        <section id="homeSection">
+            <form id="codeForm">
+                <textarea id="codeInput" placeholder="Paste your code here..."></textarea>
+                <div class="form-actions">
+                    <button type="submit">Share Code</button>
+                    <button type="button" id="clearButton">Clear All</button>
+                    <button type="button" id="sqlFilterButton">SQL Filter</button>
+                </div>
+            </form>
+            
+            <section id="sharedCodeSection" class="hidden">
+                <h2>Shared Code</h2>
+                <pre id="sharedCode" class="line-numbers"><code></code></pre>
+                <button id="copyButton">Copy Code</button>
+            </section>
+            
+            <section id="sqlOutputSection" class="hidden">
+                <h2>SQL Queries</h2>
+                <pre id="sqlOutput" class="line-numbers"><code></code></pre>
+            </section>
+        </section>
+
+        <!-- About Section -->
+        <section id="aboutSection" class="hidden">
+            <h2>About the Developer</h2>
+            <p>Hello, I'm turbo_kuttappan, the developer of this platform. </p>
+            <p>Disclaimer: This website does not support any kind of udaip activities. This was purely meant for entertainment purpose💩. Copy adich pokkiyal i am not responsible.</p>
+            <p>Copy adi nirthu Thaniye cheyyu or else naatukaar will say:</p>
+            <p>"Ninak enthenkilum kazhiv ondoda...ninne naalu peru ariyuvoda na**i"</p>
+        </section>
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 Code Sharing Platform</p>
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.28.0/components/prism-javascript.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
