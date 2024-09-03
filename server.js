@@ -1,56 +1,41 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
-const cors = require('cors');
-
 const app = express();
-const PORT = 3000;
-const FILE_PATH = './sharedCode.txt';
+const port = 3000;
 
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+let sharedCode = ''; // In-memory storage for shared code
 
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public')); // Serve static files from 'public' directory
 
-// API endpoint to get shared code
-app.get('/api/shared-code', (req, res) => {
-    fs.readFile(FILE_PATH, 'utf8', (err, data) => {
-        if (err) {
-            return res.status(500).send('Error reading shared code');
+// API to get the shared code
+app.get('/api/code', (req, res) => {
+    res.json({ code: sharedCode });
+});
+
+// API to share code
+app.post('/api/code', (req, res) => {
+    sharedCode = req.body.code;
+    res.json({ message: 'Code shared successfully!' });
+});
+
+// API to filter SQL queries
+app.post('/api/sql-filter', (req, res) => {
+    const code = req.body.code || '';
+    let sqlQueries = '';
+
+    code.split('\n').forEach(line => {
+        if (line.startsWith('mysql>')) {
+            if (sqlQueries) {
+                sqlQueries += '\n'; // Add a new line before adding new SQL query
+            }
+            sqlQueries += line.substring(6).trim(); // Append the SQL query without 'mysql>'
         }
-        res.send({ code: data });
     });
+
+    res.json({ sqlQueries: sqlQueries.trim() });
 });
 
-// API endpoint to set shared code
-app.post('/api/shared-code', (req, res) => {
-    const { code } = req.body;
-    fs.writeFile(FILE_PATH, code, 'utf8', (err) => {
-        if (err) {
-            return res.status(500).send('Error saving shared code');
-        }
-        res.send('Shared code updated');
-    });
-});
-
-// API endpoint to clear shared code
-app.delete('/api/shared-code', (req, res) => {
-    fs.writeFile(FILE_PATH, '', 'utf8', (err) => {
-        if (err) {
-            return res.status(500).send('Error clearing shared code');
-        }
-        res.send('Shared code cleared');
-    });
-});
-
-// Serve index.html on the root URL
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+app.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
 });
