@@ -83,11 +83,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Clear code functionality
+    // Clear code functionality (updated)
     clearButton.addEventListener('click', () => {
-        codeInput.value = '';
-        sharedCodeSection.classList.add('hidden');
-        sharedCode.textContent = '';
+        if (confirm('Are you sure you want to clear all shared code?')) {
+            fetch('/api/code', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(() => {
+                // Clear content on frontend
+                sharedCode.textContent = '';
+                sharedCodeSection.classList.add('hidden');
+            })
+            .catch(err => console.error('Failed to clear code on backend: ', err));
+        }
     });
 
     // Theme toggle functionality
