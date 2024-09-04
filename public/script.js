@@ -92,15 +92,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                 },
             })
-            .then(response => response.json())
-            .then(() => {
-                // Clear content on frontend
-                sharedCode.textContent = '';
-                sharedCodeSection.classList.add('hidden');
+            .then(response => {
+                if (response.ok) {
+                    // Successfully cleared on the backend, now clear the frontend
+                    sharedCode.textContent = '';
+                    sharedCodeSection.classList.add('hidden');
+                } else {
+                    console.error('Failed to clear code on backend.');
+                }
             })
             .catch(err => console.error('Failed to clear code on backend: ', err));
         }
     });
+    
 
     // Theme toggle functionality
     themeToggle.addEventListener('click', () => {
