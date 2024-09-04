@@ -8,6 +8,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public')); // Serve static files from 'public' directory
 
+app.delete('/api/code', (req, res) => {
+    sharedCode = ''; // Clear the shared code
+    res.status(200).send({ message: 'Shared code cleared successfully.' });
+});
+
 // API to get the shared code
 app.get('/api/code', (req, res) => {
     res.json({ code: sharedCode });
@@ -27,7 +32,7 @@ app.post('/api/sql-filter', (req, res) => {
     code.split('\n').forEach(line => {
         if (line.startsWith('mysql>')) {
             if (sqlQueries) {
-                sqlQueries += '\n'; // Add a new line before adding new SQL query
+                sqlQueries += '\n\n'; // Add a new line before adding new SQL query
             }
             sqlQueries += line.substring(6).trim(); // Append the SQL query without 'mysql>'
         }
