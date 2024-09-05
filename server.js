@@ -45,7 +45,7 @@ function writeSharedCode(code) {
 app.delete('/api/code', async (req, res) => {
     try {
         await writeSharedCode(''); // Clear the content of the file
-        res.status(200).send({ message: 'Shared code cleared successfully.' });
+        res.status(200).send({ message: 'Shared code cleared successfully' });
     } catch (err) {
         res.status(500).send({ error: 'Failed to clear shared code.' });
     }
