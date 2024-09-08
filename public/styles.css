@@ -31,7 +31,7 @@ body {
     --code-bg-color: #f0f0f0;
 }
 
-body.dark-mode {
+body.dark-theme {
     --bg-color: #1e1e1e;
     --text-color: #ffffff;
     --primary-color: #bb86fc;
