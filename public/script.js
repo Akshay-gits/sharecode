@@ -123,18 +123,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Theme toggle functionality
     themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-theme');
-        const isDarkMode = document.body.classList.contains('dark-theme');
-        themeToggle.textContent = isDarkMode ? '🌞 Light Mode' : '🌙 Dark Mode';
-        localStorage.setItem('theme', isDarkMode ? 'dark-theme' : '');
-    });
+    document.body.classList.toggle('dark-theme');
+    const isDarkMode = document.body.classList.contains('dark-theme');
+    themeToggle.textContent = isDarkMode ? '🌞 Light Mode' : '🌙 Dark Mode';
+    localStorage.setItem('theme', isDarkMode ? 'dark-theme' : '');
+});
 
-    // Load theme from localStorage
-    const storedTheme = localStorage.getItem('theme');
-    if (storedTheme) {
-        document.body.classList.add(storedTheme);
-        themeToggle.textContent = storedTheme === 'dark-theme' ? '🌞 Light Mode' : '🌙 Dark Mode';
-    }
+// Load theme from localStorage
+const storedTheme = localStorage.getItem('theme');
+if (storedTheme) {
+    document.body.classList.add(storedTheme);
+    themeToggle.textContent = storedTheme === 'dark-theme' ? '🌞 Light Mode' : '🌙 Dark Mode';
+}
 
     // Tab switching functionality
     homeTab.addEventListener('click', () => {
