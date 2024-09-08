@@ -13,9 +13,7 @@
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
+    "socket.io": "^4.7.5",
     "fs": "^0.0.1-security"
-  }
-   "dependencies": {
-    "socket.io": "^4.7.5"
   }
 }
