@@ -1,81 +1,43 @@
-const express = require('express');
 const fs = require('fs');
-const path = require('path');
+const express = require('express');
 const app = express();
 const port = 3000;
-
-// File path for storing the shared code
-const filePath = path.join(__dirname, 'sharedcode.txt');
+const filePath = './sharedcode.txt';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public')); // Serve static files from 'public' directory
 
-// Utility function to read shared code from file
-function readSharedCode() {
-    return new Promise((resolve, reject) => {
-        fs.readFile(filePath, 'utf8', (err, data) => {
-            if (err) {
-                if (err.code === 'ENOENT') {
-                    resolve(''); // File doesn't exist, resolve with an empty string
-                } else {
-                    reject(err);
-                }
-            } else {
-                resolve(data);
-            }
-        });
-    });
-}
-
-// Utility function to write shared code to file
-function writeSharedCode(code) {
-    return new Promise((resolve, reject) => {
-        fs.writeFile(filePath, code, 'utf8', (err) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve();
-            }
-        });
-    });
-}
-
-// API to clear the shared code
-app.delete('/api/code', async (req, res) => {
+// Helper function to read the shared code from the file
+const readSharedCode = () => {
     try {
-        await writeSharedCode(''); // Clear the content of the file
-        res.status(200).send({ message: 'Shared code cleared successfully' });
+        return fs.readFileSync(filePath, 'utf8');
     } catch (err) {
-        res.status(500).send({ error: 'Failed to clear shared code.' });
+        return ''; // Return empty string if file does not exist
     }
-});
+};
 
 // API to get the shared code
-app.get('/api/code', async (req, res) => {
-    try {
-        const code = await readSharedCode();
-        res.json({ code: code });
-    } catch (err) {
-        res.status(500).send({ error: 'Failed to load shared code.' });
-    }
+app.get('/api/code', (req, res) => {
+    const code = readSharedCode();
+    res.json({ code });
 });
 
 // API to share code
-app.post('/api/code', async (req, res) => {
-    try {
-        const newCode = req.body.code.trim();
-        if (newCode) {
-            const currentCode = await readSharedCode();
-            const updatedCode = currentCode ? currentCode + '\n' + newCode : newCode;
-            await writeSharedCode(updatedCode);
-            res.json({ message: 'Code shared successfully!' });
-        } else {
-            res.status(400).send({ error: 'No code provided.' });
-        }
-    } catch (err) {
-        res.status(500).send({ error: 'Failed to save code.' });
+app.post('/api/code', (req, res) => {
+    const code = req.body.code;
+    if (code) {
+        fs.appendFileSync(filePath, code + '\n'); // Append new code to the file
+        res.json({ message: 'Code shared successfully!' });
+    } else {
+        res.status(400).json({ message: 'No code provided.' });
     }
+});
+
+// API to clear shared code
+app.delete('/api/code', (req, res) => {
+    fs.writeFileSync(filePath, ''); // Clear the file contents
+    res.json({ message: 'Shared code cleared successfully.' });
 });
 
 // API to filter SQL queries
