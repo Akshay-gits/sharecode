@@ -14,7 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const sqlOutputSection = document.getElementById('sqlOutputSection');
     const sqlOutput = document.getElementById('sqlOutput').querySelector('code');
 
-    // Load shared code from server
+    // Initialize socket connection
+    const socket = io();
+
+    // Load shared code from server on initial load
     fetch('/api/code')
         .then(response => response.json())
         .then(data => {
@@ -25,15 +28,29 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-    // Load theme from localStorage
-    themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        const isDarkMode = document.body.classList.contains('dark-mode');
-        themeToggle.textContent = isDarkMode ? '🌞 Light Mode' : '🌙 Dark Mode';
-        localStorage.setItem('theme', isDarkMode ? 'dark-mode' : '');
+    // Real-time updates: Listen for new code from other users
+    socket.on('newCode', (data) => {
+        sharedCode.textContent += (sharedCode.textContent ? '\n' : '') + data.code;
+        sharedCodeSection.classList.remove('hidden');
+        Prism.highlightAll();
     });
 
-    // Form submit functionality (updated)
+    // Real-time updates: Listen for clear command from other users
+    socket.on('clearCode', () => {
+        sharedCode.textContent = '';
+        sharedCodeSection.classList.add('hidden');
+    });
+
+    // Real-time updates: Get the current code when connected
+    socket.on('currentCode', (data) => {
+        if (data.code) {
+            sharedCode.textContent = data.code;
+            sharedCodeSection.classList.remove('hidden');
+            Prism.highlightAll();
+        }
+    });
+
+    // Form submit functionality to share code
     codeForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const code = codeInput.value.trim();
@@ -47,11 +64,8 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(response => response.json())
             .then(data => {
-                // Append the new code to the existing content
-                sharedCode.textContent += (sharedCode.textContent ? '\n' : '') + code;
-                sharedCodeSection.classList.remove('hidden');
-                Prism.highlightAll();
-                codeInput.value = '';
+                // Code is shared through Socket.io, so no need to append manually here
+                codeInput.value = ''; // Clear the input field
             });
         }
     });
@@ -102,6 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Real-time updates: Notify all clients when code is cleared
+    clearButton.addEventListener('click', () => {
+        socket.emit('clearCode'); // Inform all clients to clear the shared code
+    });
+
     // Theme toggle functionality
     themeToggle.addEventListener('click', () => {
         document.body.classList.toggle('dark-theme');
@@ -109,6 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggle.textContent = isDarkMode ? '🌞 Light Mode' : '🌙 Dark Mode';
         localStorage.setItem('theme', isDarkMode ? 'dark-theme' : '');
     });
+
+    // Load theme from localStorage
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+        document.body.classList.add(storedTheme);
+        themeToggle.textContent = storedTheme === 'dark-theme' ? '🌞 Light Mode' : '🌙 Dark Mode';
+    }
 
     // Tab switching functionality
     homeTab.addEventListener('click', () => {
